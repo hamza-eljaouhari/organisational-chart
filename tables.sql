@@ -8,7 +8,7 @@ CREATE TABLE node_tree
 
 CREATE TABLE node_tree_names
 (
-    idNode INT NOT NULL AUTO_INCREMENT,
+    idNode INT NOT NULL,
     [language] VARCHAR(15),
     nodeName VARCHAR(255),
     FOREIGN KEY (idNode) REFERENCES node_tree(idNode)
