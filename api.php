@@ -26,18 +26,24 @@
 
     if($node_id === null){
         $json->error = "Missing mandatory params";
+        http_response_code(422);
+        $json->children_count = count($json->nodes);
         echo json_encode($json);
         exit;
     }
 
     if(intval($node_id) < 1){
         $json->error = "Invalid node id.";
+        http_response_code(400);
+        $json->children_count = count($json->nodes);
         echo json_encode($json);
         exit;
     }
 
     if($language === null){
         $json->error = "Missing mandatory params";
+        http_response_code(422);
+        $json->children_count = count($json->nodes);
         echo json_encode($json);
         exit;
     }
@@ -48,6 +54,8 @@
 
     if(intval($page_num) < 0){
         $json->error = "Invalid page number requested.";
+        http_response_code(400);
+        $json->children_count = count($json->nodes);
         echo json_encode($json);
         exit;
     }
@@ -58,6 +66,8 @@
 
     if(intval($page_size) < 0){
         $json->error = "Invalid page size requested";
+        http_response_code(400);
+        $json->children_count = count($json->nodes);
         echo json_encode($json);
         exit;
     }
@@ -67,9 +77,6 @@
     }
 
     try {
-        $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
-        
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       
         $sql = getQuery();
 
@@ -89,9 +96,10 @@
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $json->nodes = $results;
-        $json->children_count = count($results);
+        $json->children_count = count($json->nodes);
 
 
+        http_response_code(200);
         echo json_encode($json);
 
       } catch(PDOException $e) {
