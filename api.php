@@ -20,11 +20,6 @@
 
     // Validation
 
-    // echo($node_id);
-    // echo($language);
-    // echo($search_keyword);
-    // echo($page_num);
-    // echo($page_size);
     $json = new stdClass();
 
     $json->nodes = [];
@@ -57,7 +52,6 @@
         exit;
     }
 
-    
     if($page_size === null){
         $page_size = 100;
     }
@@ -68,11 +62,41 @@
         exit;
     }
 
-    // var_dump($node_id);
-    // var_dump($language);
-    // var_dump($search_keyword);
-    // var_dump($page_num);
-    // var_dump($page_size);
+    if($search_keyword === null){
+        $search_keyword = '';
+    }
 
-    echo json_encode($json);
+    try {
+        $conn = new PDO("mysql:host=$servername;dbname=$database", $username, $password);
+        
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      
+        $sql = getQuery();
+
+        $stmt = $conn->prepare($sql);
+        
+        $offset = intval($page_num) * intval($page_size);
+
+        $stmt->bindParam(':LANGUAGE', $language, PDO::PARAM_STR);
+        $stmt->bindParam(':NODE_ID', intval($node_id), PDO::PARAM_INT);
+        $stmt->bindParam(':SEARCH_KEYWORD', $search_keyword, PDO::PARAM_STR);
+        $stmt->bindParam(':OFFSET', $offset , PDO::PARAM_INT);
+        $stmt->bindParam(':PAGE_SIZE', intval($page_size), PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        // execute the stored procedure
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $json->nodes = $results;
+        $json->children_count = count($results);
+
+
+        echo json_encode($json);
+
+      } catch(PDOException $e) {
+
+        echo "Connection failed: " . $e->getMessage();
+        
+      }
 ?>
