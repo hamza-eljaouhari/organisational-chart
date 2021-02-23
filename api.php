@@ -42,7 +42,7 @@
         exit;
     }
 
-    if($page_num === null){
+    if($page_num === null || empty($page_num)){
         $page_num = 0;
     }
 
@@ -52,7 +52,7 @@
         exit;
     }
 
-    if($page_size === null){
+    if($page_size === null || empty($page_size)){
         $page_size = 100;
     }
 
